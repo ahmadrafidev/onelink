@@ -1,103 +1,102 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { ProfileEditor } from '@/components/profile-editor';
+import { LinksEditor } from '@/components/links-editor';
+import { MobilePreview } from '@/components/mobile-preview';
+import { ActionButtons } from '@/components/action-buttons';
+
+export interface SocialLink {
+  id: string;
+  platform: string;
+  url: string;
+  isActive: boolean;
+  icon: string;
+}
+
+export interface CustomLink {
+  id: string;
+  title: string;
+  url: string;
+  isActive: boolean;
+}
+
+export interface Profile {
+  name: string;
+  bio: string;
+  profileLink?: string;
+}
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [profile, setProfile] = useState<Profile>({
+    name: '',
+    bio: '',
+    profileLink: '',
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([
+    { id: 'instagram', platform: 'Instagram', url: '', isActive: false, icon: '📷' },
+    { id: 'twitter', platform: 'Twitter/X', url: '', isActive: false, icon: '🐦' },
+    { id: 'facebook', platform: 'Facebook', url: '', isActive: false, icon: '📘' },
+    { id: 'linkedin', platform: 'LinkedIn', url: '', isActive: false, icon: '💼' },
+    { id: 'youtube', platform: 'YouTube', url: '', isActive: false, icon: '🎥' },
+    { id: 'tiktok', platform: 'TikTok', url: '', isActive: false, icon: '🎵' },
+    { id: 'github', platform: 'GitHub', url: '', isActive: false, icon: '💻' },
+    { id: 'website', platform: 'Website', url: '', isActive: false, icon: '🌐' },
+  ]);
+
+  const [customLinks, setCustomLinks] = useState<CustomLink[]>([]);
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="px-6 py-4 border-b border-border bg-card">
+        <div className="max-w-7xl mx-auto flex flex-col justify-center items-center">
+          <h1 className="text-2xl font-bold text-foreground">
+            OneLink
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Create your personal link hub
+          </p>
+        </div>
+      </header>
+
+      {/* Main Content - Column Layout */}
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Left Column: Editors */}
+          <div className="space-y-6">
+            {/* Profile Editor */}
+            <ProfileEditor profile={profile} setProfile={setProfile} />
+            
+            {/* Links Editor */}
+            <LinksEditor 
+              socialLinks={socialLinks} 
+              setSocialLinks={setSocialLinks}
+              customLinks={customLinks}
+              setCustomLinks={setCustomLinks}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+
+          {/* Right Column: Preview */}
+          <div className="space-y-6">
+            <MobilePreview 
+              profile={profile} 
+              socialLinks={socialLinks}
+              customLinks={customLinks}
+            />
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-8">
+          <ActionButtons 
+            profile={profile} 
+            socialLinks={socialLinks}
+            customLinks={customLinks}
+          />
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
