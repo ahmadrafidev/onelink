@@ -3,7 +3,7 @@
  * Application-level constants
  */
 export const APP_NAME = "OneLink";
-export const APP_DESCRIPTION = "Create your personal link hub";
+export const APP_DESCRIPTION = "All your links, one elegant page";
 
 /**
  * Default values for forms and components

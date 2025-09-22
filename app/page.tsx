@@ -22,20 +22,21 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header 
-        className="px-6 py-4 border-b border-border bg-card"
+        className="px-6 py-2 md:py-6" 
         role="banner"
         aria-label="OneLink application header"
       >
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex flex-col items-center flex-1">
+        <div className="max-w-6xl mx-auto flex justify-between items-center px-6">
+          <div className="flex items-center gap-3">
             <h1 
-              className="text-2xl font-bold text-foreground"
+              className="text-xl font-semibold text-foreground tracking-tight"
               id="app-title"
             >
               {APP_NAME}
             </h1>
+            <div className="h-4 w-px bg-border" />
             <p 
-              className="text-muted-foreground text-sm"
+              className="text-muted-foreground text-sm font-medium"
               aria-describedby="app-title"
             >
               {APP_DESCRIPTION}
@@ -53,7 +54,7 @@ export default function Home() {
       {/* Main Content  */}
       <main 
         id="main-content"
-        className="max-w-6xl mx-auto px-6 py-8"
+        className="max-w-6xl mx-auto px-6 py-2 md:py-4"
         role="main"
         aria-label="OneLink editor interface"
       >
