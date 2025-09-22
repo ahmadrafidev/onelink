@@ -1,14 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, Trash2 } from 'lucide-react';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { Link, Trash2 } from 'lucide-react';
-import type { LinksEditorProps, SocialLink, CustomLink } from '@/lib/types';
+
+import { customLinkFormSchema, sanitizeUrl, generateId } from '@/lib/schemas';
+import { validateSocialLinkUrl, validateCustomLinkField } from '@/lib/utils/validation';
+import type { LinksEditorProps, SocialLink, CustomLink, CustomLinkFormData } from '@/lib/types';
 
 export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCustomLinks }: LinksEditorProps) {
   // Social Links Functions
@@ -21,7 +27,7 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
   // Custom Links Functions
   const addCustomLink = () => {
     const newLink: CustomLink = {
-      id: Date.now().toString(),
+      id: generateId(),
       title: '',
       url: '',
       isActive: true,
@@ -39,15 +45,16 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
     setCustomLinks(customLinks.filter(link => link.id !== id));
   };
 
+  const getUrlValidation = (url: string | undefined) => {
+    if (!url || url.trim() === '') return { isValid: true, error: null };
+    return validateSocialLinkUrl(url);
+  };
 
-  const isValidUrl = (url: string) => {
-    if (!url) return true;
-    try {
-      new URL(url.startsWith('http') ? url : `https://${url}`);
-      return true;
-    } catch {
-      return false;
+  const getCustomLinkFieldValidation = (field: keyof CustomLink, value: string) => {
+    if (field === 'title' || field === 'url') {
+      return validateCustomLinkField(field, value);
     }
+    return { isValid: true, error: null };
   };
 
   return (
@@ -113,24 +120,42 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                         onChange={(e) => updateSocialLink(link.id, 'url', e.target.value)}
                         placeholder={link.placeholder}
                         className={cn(
-                          "text-sm",
-                          link.url && !isValidUrl(link.url) && "border-destructive"
+                          "text-sm transition-colors duration-200",
+                          (() => {
+                            const validation = getUrlValidation(link.url);
+                            return !validation.isValid && "border-destructive focus-visible:ring-destructive";
+                          })()
                         )}
-                        aria-describedby={link.url && !isValidUrl(link.url) ? `social-url-error-${link.id}` : undefined}
-                        aria-invalid={link.url && !isValidUrl(link.url) ? 'true' : 'false'}
+                        aria-describedby={(() => {
+                          const validation = getUrlValidation(link.url);
+                          return !validation.isValid ? `social-url-error-${link.id}` : undefined;
+                        })()}
+                        aria-invalid={(() => {
+                          const validation = getUrlValidation(link.url);
+                          return !validation.isValid;
+                        })()}
                       />
-                      {link.url && !isValidUrl(link.url) && (
-                        <>
-                          <div className="absolute right-3 top-2">
-                            <svg className="w-4 h-4 text-destructive" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <div id={`social-url-error-${link.id}`} className="text-xs text-destructive mt-1">
-                            Please enter a valid URL
-                          </div>
-                        </>
-                      )}
+                      {(() => {
+                        const validation = getUrlValidation(link.url);
+                        if (!validation.isValid) {
+                          return (
+                            <>
+                              <div className="absolute right-3 top-2">
+                                <svg className="w-4 h-4 text-destructive" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                              <div id={`social-url-error-${link.id}`} className="text-xs text-destructive mt-1 flex items-center gap-1">
+                                <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                                {validation.error}
+                              </div>
+                            </>
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
                   </div>
                   
@@ -219,8 +244,36 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                         value={link.title}
                         onChange={(e) => updateCustomLink(link.id, 'title', e.target.value)}
                         placeholder="Link title"
-                        className="text-sm font-medium"
+                        className={cn(
+                          "text-sm font-medium transition-colors duration-200",
+                          (() => {
+                            const validation = getCustomLinkFieldValidation('title', link.title);
+                            return !validation.isValid && "border-destructive focus-visible:ring-destructive";
+                          })()
+                        )}
+                        aria-describedby={(() => {
+                          const validation = getCustomLinkFieldValidation('title', link.title);
+                          return !validation.isValid ? `custom-title-error-${link.id}` : undefined;
+                        })()}
+                        aria-invalid={(() => {
+                          const validation = getCustomLinkFieldValidation('title', link.title);
+                          return !validation.isValid;
+                        })()}
                       />
+                      {(() => {
+                        const validation = getCustomLinkFieldValidation('title', link.title);
+                        if (!validation.isValid) {
+                          return (
+                            <div id={`custom-title-error-${link.id}`} className="text-xs text-destructive mt-1 flex items-center gap-1">
+                              <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                              {validation.error}
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
 
                     {/* URL Input */}
@@ -235,24 +288,42 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                         onChange={(e) => updateCustomLink(link.id, 'url', e.target.value)}
                         placeholder="https://example.com"
                         className={cn(
-                          "text-sm",
-                          link.url && !isValidUrl(link.url) && "border-destructive"
+                          "text-sm transition-colors duration-200",
+                          (() => {
+                            const validation = getCustomLinkFieldValidation('url', link.url);
+                            return !validation.isValid && "border-destructive focus-visible:ring-destructive";
+                          })()
                         )}
-                        aria-describedby={link.url && !isValidUrl(link.url) ? `custom-url-error-${link.id}` : undefined}
-                        aria-invalid={link.url && !isValidUrl(link.url) ? 'true' : 'false'}
+                        aria-describedby={(() => {
+                          const validation = getCustomLinkFieldValidation('url', link.url);
+                          return !validation.isValid ? `custom-url-error-${link.id}` : undefined;
+                        })()}
+                        aria-invalid={(() => {
+                          const validation = getCustomLinkFieldValidation('url', link.url);
+                          return !validation.isValid;
+                        })()}
                       />
-                      {link.url && !isValidUrl(link.url) && (
-                        <>
-                          <div className="absolute right-3 top-2">
-                            <svg className="w-4 h-4 text-destructive" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          </div>
-                          <div id={`custom-url-error-${link.id}`} className="text-xs text-destructive mt-1">
-                            Please enter a valid URL
-                          </div>
-                        </>
-                      )}
+                      {(() => {
+                        const validation = getCustomLinkFieldValidation('url', link.url);
+                        if (!validation.isValid) {
+                          return (
+                            <>
+                              <div className="absolute right-3 top-2">
+                                <svg className="w-4 h-4 text-destructive" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                              <div id={`custom-url-error-${link.id}`} className="text-xs text-destructive mt-1 flex items-center gap-1">
+                                <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                </svg>
+                                {validation.error}
+                              </div>
+                            </>
+                          );
+                        }
+                        return null;
+                      })()}
                     </div>
                   </div>
                   

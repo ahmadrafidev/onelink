@@ -1,14 +1,53 @@
 'use client';
 
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import type { ProfileEditorProps, Profile } from '@/lib/types';
+import { profileFormSchema } from '@/lib/schemas';
+import type { ProfileEditorProps, Profile, ProfileFormData } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
-  const handleInputChange = (field: keyof Profile, value: string) => {
-    setProfile({ ...profile, [field]: value });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isValid },
+    setValue,
+  } = useForm({
+    resolver: zodResolver(profileFormSchema),
+    mode: 'onChange' as const,
+    defaultValues: {
+      name: profile.name,
+      bio: profile.bio || '',
+    },
+  });
+
+  const watchedValues = watch();
+  const bioLength = watchedValues.bio?.length || 0;
+
+  // Update parent state when form values change
+  const onFormChange = (data: { name: string; bio: string }) => {
+    setProfile({
+      ...profile,
+      name: data.name,
+      bio: data.bio || '',
+    });
+  };
+
+  // Handle real-time updates
+  const handleInputChange = (field: 'name' | 'bio', value: string) => {
+    setValue(field, value, { shouldValidate: true, shouldDirty: true });
+    
+    // Update parent state immediately for real-time preview
+    const updatedProfile = {
+      ...profile,
+      [field]: value,
+    };
+    setProfile(updatedProfile);
   };
 
   return (
@@ -39,42 +78,77 @@ export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Name Input */}
-        <div className="space-y-2">
-          <Label htmlFor="display-name">Display Name</Label>
-          <Input
-            id="display-name"
-            type="text"
-            value={profile.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
-            placeholder="Type your name here"
-            aria-describedby="display-name-desc"
-            required
-            aria-required="true"
-          />
-          <div id="display-name-desc" className="text-xs text-muted-foreground">
-            This will be displayed as your main heading
+        <form onSubmit={handleSubmit(onFormChange)} className="space-y-6">
+          {/* Name Input */}
+          <div className="space-y-2">
+            <Label htmlFor="display-name">
+              Display Name <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="display-name"
+              type="text"
+              {...register('name')}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              placeholder="Type your name here"
+              className={cn(
+                "transition-colors duration-200",
+                errors.name && "border-destructive focus-visible:ring-destructive"
+              )}
+              aria-describedby={errors.name ? "display-name-error" : "display-name-desc"}
+              aria-invalid={!!errors.name}
+            />
+            {errors.name ? (
+              <div id="display-name-error" className="text-xs text-destructive flex items-center gap-1">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {errors.name.message}
+              </div>
+            ) : (
+              <div id="display-name-desc" className="text-xs text-muted-foreground">
+                This will be displayed as your main heading
+              </div>
+            )}
           </div>
-        </div>
 
-        {/* Bio Input */}
-        <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
-          <Textarea
-            id="bio"
-            value={profile.bio}
-            onChange={(e) => handleInputChange('bio', e.target.value)}
-            placeholder="Tell people about yourself..."
-            rows={3}
-            className="resize-none focus-enhanced"
-            aria-describedby="bio-desc"
-            maxLength={160}
-          />
-          <div id="bio-desc" className="text-xs text-muted-foreground flex justify-between">
-            <span>Brief description about yourself (optional)</span>
-            <span>{profile.bio.length}/160</span>
+          {/* Bio Input */}
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <Textarea
+              id="bio"
+              {...register('bio')}
+              onChange={(e) => handleInputChange('bio', e.target.value)}
+              placeholder="Tell people about yourself..."
+              rows={3}
+              className={cn(
+                "resize-none transition-colors duration-200",
+                errors.bio && "border-destructive focus-visible:ring-destructive"
+              )}
+              aria-describedby={errors.bio ? "bio-error" : "bio-desc"}
+              aria-invalid={!!errors.bio}
+              maxLength={160}
+            />
+            {errors.bio ? (
+              <div id="bio-error" className="text-xs text-destructive flex items-center gap-1">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                {errors.bio.message}
+              </div>
+            ) : (
+              <div id="bio-desc" className="text-xs text-muted-foreground flex justify-between">
+                <span>Brief description about yourself (optional)</span>
+                <span className={cn(
+                  "transition-colors duration-200",
+                  bioLength > 150 && "text-orange-500",
+                  bioLength >= 160 && "text-destructive"
+                )}>
+                  {bioLength}/160
+                </span>
+              </div>
+            )}
           </div>
-        </div>
+        </form>
       </CardContent>
     </Card>
   );

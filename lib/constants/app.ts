@@ -1,4 +1,6 @@
 
+import { Profile } from '@/lib/types';
+
 /**
  * Application-level constants
  */
@@ -8,7 +10,7 @@ export const APP_DESCRIPTION = "All your links, in one place";
 /**
  * Default values for forms and components
  */
-export const DEFAULT_PROFILE = {
+export const DEFAULT_PROFILE: Profile = {
   name: '',
   bio: '',
   profileLink: '',

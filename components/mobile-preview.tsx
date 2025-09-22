@@ -160,7 +160,7 @@ export function MobilePreview({ profile, socialLinks, customLinks }: MobilePrevi
                               {activeSocialLinks.map((link) => (
                                 <Button
                                   key={link.id}
-                                  onClick={() => handleLinkClick(link.url, link.platform)}
+                                  onClick={() => handleLinkClick(link.url || '', link.platform)}
                                   className="w-full py-4 px-5 rounded-xl text-sm font-medium transition-all duration-200 ease-out transform hover:scale-[1.02] active:scale-[0.98] bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100 shadow-sm"
                                   variant="ghost"
                                   aria-label={`Preview link to ${link.platform} - ${link.url}`}
@@ -181,7 +181,7 @@ export function MobilePreview({ profile, socialLinks, customLinks }: MobilePrevi
                                 {activeSocialLinks.map((link) => (
                                   <button
                                     key={link.id}
-                                    onClick={() => handleLinkClick(link.url, link.platform)}
+                                    onClick={() => handleLinkClick(link.url || '', link.platform)}
                                     className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 ease-out transform hover:scale-110 active:scale-95 flex items-center justify-center group"
                                     aria-label={`Preview link to ${link.platform} - ${link.url}`}
                                     title={link.platform}
@@ -215,7 +215,7 @@ export function MobilePreview({ profile, socialLinks, customLinks }: MobilePrevi
                               )}
                             >
                               <Button
-                                onClick={() => handleLinkClick(link.url, link.title)}
+                                onClick={() => handleLinkClick(link.url || '', link.title)}
                                 className="w-full py-4 px-5 rounded-xl text-sm font-medium transition-all duration-200 ease-out transform hover:scale-[1.02] active:scale-[0.98] bg-white dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 shadow-sm group-hover:border-gray-300 dark:group-hover:border-gray-500"
                                 variant="ghost"
                                 aria-label={`Preview link to ${link.title} - ${link.url}`}

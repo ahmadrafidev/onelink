@@ -1,18 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { MOCK_BASE_URL, EXPORT_FILE_TYPE, EXPORT_FILE_PREFIX } from '@/lib/constants';
-import type { ActionButtonsProps } from '@/lib/types';
+import { MOCK_BASE_URL } from '@/lib/constants';
+import { downloadAppData, uploadAndImportAppData, validateBeforeExport } from '@/lib/utils/export-import';
+import type { ActionButtonsProps, AppState } from '@/lib/types';
 
-export function ActionButtons({ profile, socialLinks, customLinks }: ActionButtonsProps) {
+interface ExtendedActionButtonsProps extends ActionButtonsProps {
+  onImportData?: (data: AppState) => void;
+}
+
+export function ActionButtons({ 
+  profile, 
+  socialLinks, 
+  customLinks, 
+  onImportData 
+}: ExtendedActionButtonsProps) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isShortening, setIsShortening] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
+  const [exportErrors, setExportErrors] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const activeSocialLinks = socialLinks.filter(link => link.isActive && link.url);
   const activeCustomLinks = customLinks.filter(link => link.isActive && link.url && link.title);
@@ -52,29 +65,64 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
 
   const handleExport = async () => {
     setIsExporting(true);
+    setExportErrors([]);
     
-    // Create export data
-    const exportData = {
-      profile,
-      socialLinks: activeSocialLinks,
-      customLinks: activeCustomLinks,
-      exportedAt: new Date().toISOString(),
-    };
-    
-    // Create and download JSON file
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: EXPORT_FILE_TYPE });
-    const url = URL.createObjectURL(dataBlob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${EXPORT_FILE_PREFIX}-${profile.name || 'export'}-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    try {
+      // Create app state object
+      const appState: AppState = {
+        profile,
+        socialLinks,
+        customLinks,
+      };
+      
+      // Validate before export
+      const validation = validateBeforeExport(appState);
+      if (!validation.isValid) {
+        setExportErrors(validation.errors);
+        setIsExporting(false);
+        return;
+      }
+      
+      // Export with validation
+      const result = downloadAppData(appState);
+      if (!result.success) {
+        setExportErrors([result.message]);
+      }
+    } catch (error) {
+      setExportErrors([error instanceof Error ? error.message : 'Export failed']);
+    }
     
     setIsExporting(false);
+  };
+
+  const handleImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    setExportErrors([]);
+    
+    try {
+      const result = await uploadAndImportAppData(file);
+      if (result.success && onImportData) {
+        onImportData(result.data);
+        alert('Data imported successfully!');
+      } else if (!result.success) {
+        setExportErrors([result.error]);
+      }
+    } catch (error) {
+      setExportErrors([error instanceof Error ? error.message : 'Import failed']);
+    }
+    
+    setIsImporting(false);
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleShare = async () => {
@@ -152,6 +200,28 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
             <AlertTitle>Almost ready!</AlertTitle>
             <AlertDescription id="publish-requirements">
               Add your name and at least one link to publish your page.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Export Errors */}
+        {exportErrors.length > 0 && (
+          <Alert variant="destructive" role="alert" aria-live="assertive">
+            <svg 
+              className="w-4 h-4" 
+              fill="currentColor" 
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <AlertTitle>Validation Error</AlertTitle>
+            <AlertDescription>
+              <ul className="mt-2 space-y-1">
+                {exportErrors.map((error, index) => (
+                  <li key={index} className="text-sm">• {error}</li>
+                ))}
+              </ul>
             </AlertDescription>
           </Alert>
         )}
@@ -307,7 +377,7 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
 
         {/* Secondary Actions */}
         <div className="pt-4 border-t border-border">
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-4">
             <Button
               onClick={handleExport}
               disabled={!isReadyToPublish || isExporting}
@@ -344,6 +414,56 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
                 </>
               )}
             </Button>
+            
+            {onImportData && (
+              <>
+                <Button
+                  onClick={handleImport}
+                  disabled={isImporting}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+                  aria-label="Import profile and links data from JSON file"
+                >
+                  {isImporting ? (
+                    <>
+                      <svg 
+                        className="w-4 h-4 animate-spin" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      <span aria-live="polite">Importing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg 
+                        className="w-4 h-4" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                      </svg>
+                      Import Data
+                    </>
+                  )}
+                </Button>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json"
+                  onChange={handleFileImport}
+                  className="hidden"
+                  aria-label="Select JSON file to import"
+                />
+              </>
+            )}
           </div>
         </div>
       </CardContent>

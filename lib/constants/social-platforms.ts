@@ -8,7 +8,8 @@ import {
   Github,
   Globe,
 } from 'lucide-react';
-import type { SocialPlatformConfig } from '@/lib/types';
+import type { SocialPlatformConfig, SocialLink } from '@/lib/types';
+import { generateId } from '@/lib/types';
 
 export const SOCIAL_PLATFORMS: SocialPlatformConfig[] = [
   { 
@@ -64,7 +65,7 @@ export const SOCIAL_PLATFORMS: SocialPlatformConfig[] = [
 /**
  * Creates the initial social links array for state management
  */
-export const createInitialSocialLinks = () => {
+export const createInitialSocialLinks = (): SocialLink[] => {
   return SOCIAL_PLATFORMS.map(config => ({
     ...config,
     url: '',

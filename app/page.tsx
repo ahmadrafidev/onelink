@@ -19,6 +19,13 @@ export default function Home() {
   const [customLinks, setCustomLinks] = useState<CustomLink[]>([]);
   const isMobile = useIsMobile();
 
+  // Handle data import
+  const handleImportData = (data: { profile: Profile; socialLinks: SocialLink[]; customLinks: CustomLink[] }) => {
+    setProfile(data.profile);
+    setSocialLinks(data.socialLinks);
+    setCustomLinks(data.customLinks);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -116,6 +123,7 @@ export default function Home() {
             profile={profile} 
             socialLinks={socialLinks}
             customLinks={customLinks}
+            onImportData={handleImportData}
           />
         </section>
       </main>

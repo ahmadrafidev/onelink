@@ -1,33 +1,25 @@
-import type { LucideIcon } from 'lucide-react';
-
 /**
  * Core data types for the OneLink application
  */
 
-export interface SocialLink {
-  id: string;
-  platform: string;
-  url: string;
-  isActive: boolean;
-  icon: LucideIcon;
-  placeholder: string;
-}
+export type {
+  Profile,
+  SocialLink,
+  CustomLink,
+  SocialPlatformConfig,
+  AppState,
+  ProfileFormData,
+  CustomLinkFormData,
+  SocialLinkFormData,
+  ExportData,
+} from '@/lib/schemas';
 
-export interface CustomLink {
-  id: string;
-  title: string;
-  url: string;
-  isActive: boolean;
-}
-
-export interface Profile {
-  name: string;
-  bio: string;
-}
-
-export interface SocialPlatformConfig {
-  id: string;
-  platform: string;
-  icon: LucideIcon;
-  placeholder: string;
-}
+export {
+  validateProfile,
+  validateSocialLink,
+  validateCustomLink,
+  validateAppState,
+  validateExportData,
+  sanitizeUrl,
+  generateId,
+} from '@/lib/schemas';
