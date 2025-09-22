@@ -7,6 +7,7 @@ import { LinksEditor } from '@/components/links-editor';
 import { MobilePreview } from '@/components/mobile-preview';
 import { ActionButtons } from '@/components/action-buttons';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Footer } from '@/components/footer';
 
 import { createInitialSocialLinks, DEFAULT_PROFILE, APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
 import type { Profile, SocialLink, CustomLink } from '@/lib/types';
@@ -114,6 +115,9 @@ export default function Home() {
           />
         </section>
       </main>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
