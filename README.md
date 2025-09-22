@@ -3,7 +3,7 @@
   
   # OneLink
   
-  **A beautiful, minimalistic link-in-bio page builder**
+  **All your links, unified in one place.**
   
   Create elegant, customizable pages with real-time preview
 

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "OneLink",
-  description: "Create beautiful, minimalistic link-in-bio pages with real-time preview. Like Linktree, but more elegant.",
+  description: "All your links, unified in one place.",
 };
 
 export default function RootLayout({
