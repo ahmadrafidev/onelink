@@ -3,13 +3,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { Profile, SocialLink, CustomLink } from '../app/page';
-
-interface MobilePreviewProps {
-  profile: Profile;
-  socialLinks: SocialLink[];
-  customLinks: CustomLink[];
-}
+import type { MobilePreviewProps } from '@/lib/types';
 
 export function MobilePreview({ profile, socialLinks, customLinks }: MobilePreviewProps) {
   const activeSocialLinks = socialLinks.filter(link => link.isActive && link.url);
@@ -125,7 +119,7 @@ export function MobilePreview({ profile, socialLinks, customLinks }: MobilePrevi
                           >
                             <span className="flex items-center gap-2">
                               {'platform' in link && (
-                                <span className="text-lg" aria-hidden="true">{link.icon}</span>
+                                <link.icon className="w-5 h-5" aria-hidden="true" />
                               )}
                               {linkText}
                             </span>

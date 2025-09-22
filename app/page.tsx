@@ -1,50 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+
 import { ProfileEditor } from '@/components/profile-editor';
 import { LinksEditor } from '@/components/links-editor';
 import { MobilePreview } from '@/components/mobile-preview';
 import { ActionButtons } from '@/components/action-buttons';
 import { ThemeToggle } from '@/components/theme-toggle';
 
-export interface SocialLink {
-  id: string;
-  platform: string;
-  url: string;
-  isActive: boolean;
-  icon: string;
-}
-
-export interface CustomLink {
-  id: string;
-  title: string;
-  url: string;
-  isActive: boolean;
-}
-
-export interface Profile {
-  name: string;
-  bio: string;
-  profileLink?: string;
-}
+import { createInitialSocialLinks, DEFAULT_PROFILE, APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
+import type { Profile, SocialLink, CustomLink } from '@/lib/types';
 
 export default function Home() {
-  const [profile, setProfile] = useState<Profile>({
-    name: '',
-    bio: '',
-    profileLink: '',
-  });
+  const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
 
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([
-    { id: 'instagram', platform: 'Instagram', url: '', isActive: false, icon: '📷' },
-    { id: 'twitter', platform: 'Twitter/X', url: '', isActive: false, icon: '🐦' },
-    { id: 'facebook', platform: 'Facebook', url: '', isActive: false, icon: '📘' },
-    { id: 'linkedin', platform: 'LinkedIn', url: '', isActive: false, icon: '💼' },
-    { id: 'youtube', platform: 'YouTube', url: '', isActive: false, icon: '🎥' },
-    { id: 'tiktok', platform: 'TikTok', url: '', isActive: false, icon: '🎵' },
-    { id: 'github', platform: 'GitHub', url: '', isActive: false, icon: '💻' },
-    { id: 'website', platform: 'Website', url: '', isActive: false, icon: '🌐' },
-  ]);
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>(createInitialSocialLinks());
 
   const [customLinks, setCustomLinks] = useState<CustomLink[]>([]);
 
@@ -62,13 +32,13 @@ export default function Home() {
               className="text-2xl font-bold text-foreground"
               id="app-title"
             >
-              OneLink
+              {APP_NAME}
             </h1>
             <p 
               className="text-muted-foreground text-sm"
               aria-describedby="app-title"
             >
-              Create your personal link hub
+              {APP_DESCRIPTION}
             </p>
           </div>
           <nav 
@@ -80,7 +50,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content - Column Layout */}
+      {/* Main Content  */}
       <main 
         id="main-content"
         className="max-w-6xl mx-auto px-6 py-8"

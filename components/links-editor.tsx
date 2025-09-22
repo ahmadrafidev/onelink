@@ -8,14 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import type { SocialLink, CustomLink } from '../app/page';
-
-interface LinksEditorProps {
-  socialLinks: SocialLink[];
-  setSocialLinks: (links: SocialLink[]) => void;
-  customLinks: CustomLink[];
-  setCustomLinks: (links: CustomLink[]) => void;
-}
+import type { LinksEditorProps, SocialLink, CustomLink } from '@/lib/types';
 
 export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCustomLinks }: LinksEditorProps) {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
@@ -127,18 +120,15 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                 role="group"
                 aria-labelledby={`social-platform-${link.id}`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-start gap-4">
                   {/* Platform Icon */}
-                  <div className="text-2xl" aria-hidden="true">{link.icon}</div>
-                  
-                  <div className="flex-1 space-y-3">
-                    {/* Platform Name */}
-                    <div 
-                      id={`social-platform-${link.id}`}
-                      className="font-medium text-sm"
-                    >
-                      {link.platform}
+                  <div className="flex-shrink-0 mt-1">
+                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                      <link.icon className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
                     </div>
+                  </div>
+                  
+                  <div className="flex-1 space-y-3 min-w-0">
                     
                     {/* URL Input */}
                     <div className="space-y-1 relative">
@@ -150,7 +140,7 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                         type="url"
                         value={link.url}
                         onChange={(e) => updateSocialLink(link.id, 'url', e.target.value)}
-                        placeholder={`Your ${link.platform} URL`}
+                        placeholder={link.placeholder}
                         className={cn(
                           "text-sm",
                           link.url && !isValidUrl(link.url) && "border-destructive"
@@ -171,24 +161,24 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                         </>
                       )}
                     </div>
-                  </div>
-
-                  {/* Active Toggle */}
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`social-active-${link.id}`}
-                      checked={link.isActive}
-                      onCheckedChange={(checked) => updateSocialLink(link.id, 'isActive', checked)}
-                    />
-                    <Label
-                      htmlFor={`social-active-${link.id}`}
-                      className="text-sm font-normal cursor-pointer"
-                    >
-                      Active
-                    </Label>
+                    </div>
+                    
+                    {/* Active Toggle */}
+                    <div className="flex items-center space-x-2 pt-1">
+                      <Checkbox
+                        id={`social-active-${link.id}`}
+                        checked={link.isActive}
+                        onCheckedChange={(checked) => updateSocialLink(link.id, 'isActive', checked)}
+                      />
+                      <Label
+                        htmlFor={`social-active-${link.id}`}
+                        className="text-sm font-normal cursor-pointer"
+                      >
+                        Active
+                      </Label>
+                    </div>
                   </div>
                 </div>
-              </div>
             ))}
           </div>
         </CardContent>

@@ -5,13 +5,8 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import type { Profile, SocialLink, CustomLink } from '../app/page';
-
-interface ActionButtonsProps {
-  profile: Profile;
-  socialLinks: SocialLink[];
-  customLinks: CustomLink[];
-}
+import { MOCK_BASE_URL, EXPORT_FILE_TYPE, EXPORT_FILE_PREFIX } from '@/lib/constants';
+import type { ActionButtonsProps } from '@/lib/types';
 
 export function ActionButtons({ profile, socialLinks, customLinks }: ActionButtonsProps) {
   const [isPublishing, setIsPublishing] = useState(false);
@@ -34,7 +29,7 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
     
     // Generate a mock URL
     const username = profile.name.toLowerCase().replace(/\s+/g, '');
-    const mockUrl = `https://onelink.app/${username}`;
+    const mockUrl = `${MOCK_BASE_URL}/${username}`;
     setPublishedUrl(mockUrl);
     setIsPublishing(false);
   };
@@ -68,12 +63,12 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
     
     // Create and download JSON file
     const dataStr = JSON.stringify(exportData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const dataBlob = new Blob([dataStr], { type: EXPORT_FILE_TYPE });
     const url = URL.createObjectURL(dataBlob);
     
     const link = document.createElement('a');
     link.href = url;
-    link.download = `onelink-${profile.name || 'export'}-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `${EXPORT_FILE_PREFIX}-${profile.name || 'export'}-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

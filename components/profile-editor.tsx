@@ -4,12 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import type { Profile } from '../app/page';
-
-interface ProfileEditorProps {
-  profile: Profile;
-  setProfile: (profile: Profile) => void;
-}
+import type { ProfileEditorProps, Profile } from '@/lib/types';
 
 export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
   const handleInputChange = (field: keyof Profile, value: string) => {
