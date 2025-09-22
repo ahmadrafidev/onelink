@@ -10,41 +10,45 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { Footer } from '@/components/footer';
 
 import { createInitialSocialLinks, DEFAULT_PROFILE, APP_NAME, APP_DESCRIPTION } from '@/lib/constants';
+import { useIsMobile } from '@/hooks/use-mobile';
 import type { Profile, SocialLink, CustomLink } from '@/lib/types';
 
 export default function Home() {
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
-
   const [socialLinks, setSocialLinks] = useState<SocialLink[]>(createInitialSocialLinks());
-
   const [customLinks, setCustomLinks] = useState<CustomLink[]>([]);
+  const isMobile = useIsMobile();
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header 
-        className="px-6 py-2 md:py-6" 
+      <header
+        className="px-4 py-3 md:px-6 md:py-6"
         role="banner"
         aria-label="OneLink application header"
       >
         <div className="max-w-6xl mx-auto flex justify-between items-center px-6">
-          <div className="flex items-center gap-3">
-            <h1 
-              className="text-xl font-semibold text-foreground tracking-tight"
+          <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+            <h1
+              className="text-lg md:text-2xl font-semibold text-foreground tracking-tight truncate"
               id="app-title"
             >
               {APP_NAME}
             </h1>
-            <div className="h-4 w-px bg-border" />
-            <p 
-              className="text-muted-foreground text-sm font-medium"
-              aria-describedby="app-title"
-            >
-              {APP_DESCRIPTION}
-            </p>
+            {!isMobile && (
+              <>
+                <div className="h-4 w-px bg-border flex-shrink-0" />
+                <p
+                  className="text-muted-foreground text-sm font-medium truncate"
+                  aria-describedby="app-title"
+                >
+                  {APP_DESCRIPTION}
+                </p>
+              </>
+            )}
           </div>
-          <nav 
-            className="flex items-center"
+          <nav
+            className="flex items-center flex-shrink-0"
             aria-label="Theme options"
           >
             <ThemeToggle />
@@ -53,9 +57,9 @@ export default function Home() {
       </header>
 
       {/* Main Content  */}
-      <main 
+      <main
         id="main-content"
-        className="max-w-6xl mx-auto px-6 py-2 md:py-4"
+        className="max-w-6xl mx-auto px-4 py-2 md:px-6 md:py-4"
         role="main"
         aria-label="OneLink editor interface"
       >
