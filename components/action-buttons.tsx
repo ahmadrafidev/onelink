@@ -119,12 +119,16 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+          <div 
+            className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center"
+            aria-hidden="true"
+          >
             <svg
               className="w-4 h-4 text-indigo-600 dark:text-indigo-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -141,12 +145,17 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
       <CardContent className="space-y-6">
         {/* Status Message */}
         {!isReadyToPublish && (
-          <Alert>
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <Alert role="status" aria-live="polite">
+            <svg 
+              className="w-4 h-4" 
+              fill="currentColor" 
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
             </svg>
             <AlertTitle>Almost ready!</AlertTitle>
-            <AlertDescription>
+            <AlertDescription id="publish-requirements">
               Add your name and at least one link to publish your page.
             </AlertDescription>
           </Alert>
@@ -154,8 +163,13 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
 
         {/* Published URL */}
         {publishedUrl && (
-          <Alert>
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <Alert role="status" aria-live="polite">
+            <svg 
+              className="w-4 h-4" 
+              fill="currentColor" 
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
             <AlertTitle>Published successfully!</AlertTitle>
@@ -164,8 +178,12 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigator.clipboard.writeText(publishedUrl)}
+                onClick={() => {
+                  navigator.clipboard.writeText(publishedUrl);
+                  alert('URL copied to clipboard!');
+                }}
                 className="h-auto p-1 font-mono text-xs hover:bg-muted"
+                aria-label={`Copy URL ${publishedUrl} to clipboard`}
               >
                 {publishedUrl}
               </Button>
@@ -178,20 +196,34 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
           {/* Publish Button */}
           <Button
             onClick={handlePublish}
-            disabled={true}
+            disabled={!isReadyToPublish || isPublishing}
             variant="secondary"
             className="transition-all duration-200 ease-out transform hover:scale-105"
+            aria-label={!isReadyToPublish ? "Publish page (disabled: add name and at least one link first)" : "Publish your OneLink page"}
+            aria-describedby={!isReadyToPublish ? "publish-requirements" : undefined}
           >
             {isPublishing ? (
               <>
-                <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg 
+                  className="w-4 h-4 animate-spin" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                Publishing...
+                <span aria-live="polite">Publishing...</span>
               </>
             ) : (
               <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg 
+                  className="w-4 h-4" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
                 Publish
@@ -202,11 +234,18 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
           {/* Preview Button */}
           <Button
             onClick={handlePreview}
-            disabled={true}
+            disabled={!isReadyToPublish}
             variant="outline"
             className="transition-all duration-200 ease-out transform hover:scale-105"
+            aria-label={!isReadyToPublish ? "Preview page (disabled: add name and at least one link first)" : "Preview your OneLink page in a new tab"}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg 
+              className="w-4 h-4" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
@@ -216,11 +255,18 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
           {/* Share Button */}
           <Button
             onClick={handleShare}
-            disabled={true}
+            disabled={!publishedUrl}
             variant="secondary"
             className="transition-all duration-200 ease-out transform hover:scale-105"
+            aria-label={!publishedUrl ? "Share page (disabled: publish page first)" : "Share your OneLink page"}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg 
+              className="w-4 h-4" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
             </svg>
             Share
@@ -229,20 +275,33 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
           {/* Shortener Button */}
           <Button
             onClick={handleShorten}
-            disabled={true}
+            disabled={!publishedUrl || isShortening}
             variant="secondary"
             className="transition-all duration-200 ease-out transform hover:scale-105"
+            aria-label={!publishedUrl ? "Shorten URL (disabled: publish page first)" : "Create a shortened URL and copy to clipboard"}
           >
             {isShortening ? (
               <>
-                <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg 
+                  className="w-4 h-4 animate-spin" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
-                Shortening...
+                <span aria-live="polite">Shortening...</span>
               </>
             ) : (
               <>
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg 
+                  className="w-4 h-4" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                 </svg>
                 Shorten
@@ -256,21 +315,34 @@ export function ActionButtons({ profile, socialLinks, customLinks }: ActionButto
           <div className="flex justify-center">
             <Button
               onClick={handleExport}
-              disabled={true}
+              disabled={!isReadyToPublish || isExporting}
               variant="ghost"
               size="sm"
               className="text-muted-foreground hover:text-foreground"
+              aria-label={!isReadyToPublish ? "Export data (disabled: add name and at least one link first)" : "Export your profile and links data as JSON file"}
             >
               {isExporting ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg 
+                    className="w-4 h-4 animate-spin" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
-                  Exporting...
+                  <span aria-live="polite">Exporting...</span>
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg 
+                    className="w-4 h-4" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   Export Data

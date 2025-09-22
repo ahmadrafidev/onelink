@@ -20,12 +20,16 @@ export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
     <Card className="transition-all duration-200 ease-out hover:shadow-md">
       <CardHeader>
         <CardTitle className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+          <div 
+            className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center"
+            aria-hidden="true"
+          >
             <svg
               className="w-4 h-4 text-blue-600 dark:text-blue-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -40,7 +44,6 @@ export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
       </CardHeader>
 
       <CardContent className="space-y-6">
-
         {/* Name Input */}
         <div className="space-y-2">
           <Label htmlFor="display-name">Display Name</Label>
@@ -50,7 +53,13 @@ export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
             value={profile.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
             placeholder="Your name"
+            aria-describedby="display-name-desc"
+            required
+            aria-required="true"
           />
+          <div id="display-name-desc" className="text-xs text-muted-foreground">
+            This will be displayed as your main heading
+          </div>
         </div>
 
         {/* Profile Link Input */}
@@ -59,10 +68,14 @@ export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
           <Input
             id="profile-link"
             type="text"
-             value={profile.profileLink}
+            value={profile.profileLink}
             onChange={(e) => handleInputChange('profileLink', e.target.value)}
             placeholder="onelink.app/yourname"
+            aria-describedby="profile-link-desc"
           />
+          <div id="profile-link-desc" className="text-xs text-muted-foreground">
+            Choose your custom URL (optional)
+          </div>
         </div>
 
         {/* Bio Input */}
@@ -74,8 +87,14 @@ export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
             onChange={(e) => handleInputChange('bio', e.target.value)}
             placeholder="Tell people about yourself..."
             rows={3}
-            className="resize-none"
+            className="resize-none focus-enhanced"
+            aria-describedby="bio-desc"
+            maxLength={160}
           />
+          <div id="bio-desc" className="text-xs text-muted-foreground flex justify-between">
+            <span>Brief description about yourself (optional)</span>
+            <span>{profile.bio.length}/160</span>
+          </div>
         </div>
       </CardContent>
     </Card>
