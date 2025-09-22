@@ -120,18 +120,18 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                 role="group"
                 aria-labelledby={`social-platform-${link.id}`}
               >
-                <div className="flex items-start gap-4">
+                <div className="flex items-center gap-4">
                   {/* Platform Icon */}
-                  <div className="flex-shrink-0 mt-1">
+                  <div className="flex-shrink-0">
                     <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
                       <link.icon className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
                     </div>
                   </div>
                   
-                  <div className="flex-1 space-y-3 min-w-0">
-                    
+                  {/* URL Input */}
+                  <div className="flex-1 space-y-2 min-w-0">
                     {/* URL Input */}
-                    <div className="space-y-1 relative">
+                    <div className="relative">
                       <Label htmlFor={`social-url-${link.id}`} className="sr-only">
                         {link.platform} URL
                       </Label>
@@ -155,30 +155,25 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
                           </div>
-                          <div id={`social-url-error-${link.id}`} className="text-xs text-destructive">
+                          <div id={`social-url-error-${link.id}`} className="text-xs text-destructive mt-1">
                             Please enter a valid URL
                           </div>
                         </>
                       )}
                     </div>
-                    </div>
-                    
-                    {/* Active Toggle */}
-                    <div className="flex items-center space-x-2 pt-1">
-                      <Checkbox
-                        id={`social-active-${link.id}`}
-                        checked={link.isActive}
-                        onCheckedChange={(checked) => updateSocialLink(link.id, 'isActive', checked)}
-                      />
-                      <Label
-                        htmlFor={`social-active-${link.id}`}
-                        className="text-sm font-normal cursor-pointer"
-                      >
-                        Active
-                      </Label>
-                    </div>
+                  </div>
+                  
+                  {/* Active Toggle - Just checkbox */}
+                  <div className="flex-shrink-0">
+                    <Checkbox
+                      id={`social-active-${link.id}`}
+                      checked={link.isActive}
+                      onCheckedChange={(checked) => updateSocialLink(link.id, 'isActive', checked)}
+                      aria-label={`Toggle ${link.platform}`}
+                    />
                   </div>
                 </div>
+              </div>
             ))}
           </div>
         </CardContent>

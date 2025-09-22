@@ -23,7 +23,6 @@ export interface CustomLink {
 export interface Profile {
   name: string;
   bio: string;
-  profileLink?: string;
 }
 
 export interface SocialPlatformConfig {

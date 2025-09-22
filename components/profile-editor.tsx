@@ -47,29 +47,13 @@ export function ProfileEditor({ profile, setProfile }: ProfileEditorProps) {
             type="text"
             value={profile.name}
             onChange={(e) => handleInputChange('name', e.target.value)}
-            placeholder="Your name"
+            placeholder="Type your name here"
             aria-describedby="display-name-desc"
             required
             aria-required="true"
           />
           <div id="display-name-desc" className="text-xs text-muted-foreground">
             This will be displayed as your main heading
-          </div>
-        </div>
-
-        {/* Profile Link Input */}
-        <div className="space-y-2">
-          <Label htmlFor="profile-link">Profile Link</Label>
-          <Input
-            id="profile-link"
-            type="text"
-            value={profile.profileLink}
-            onChange={(e) => handleInputChange('profileLink', e.target.value)}
-            placeholder="onelink.app/yourname"
-            aria-describedby="profile-link-desc"
-          />
-          <div id="profile-link-desc" className="text-xs text-muted-foreground">
-            Choose your custom URL (optional)
           </div>
         </div>
 
