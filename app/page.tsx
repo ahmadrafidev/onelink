@@ -5,6 +5,7 @@ import { ProfileEditor } from '@/components/profile-editor';
 import { LinksEditor } from '@/components/links-editor';
 import { MobilePreview } from '@/components/mobile-preview';
 import { ActionButtons } from '@/components/action-buttons';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export interface SocialLink {
   id: string;
@@ -51,13 +52,18 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="px-6 py-4 border-b border-border bg-card">
-        <div className="max-w-7xl mx-auto flex flex-col justify-center items-center">
-          <h1 className="text-2xl font-bold text-foreground">
-            OneLink
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Create your personal link hub
-          </p>
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex flex-col items-center flex-1">
+            <h1 className="text-2xl font-bold text-foreground">
+              OneLink
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Create your personal link hub
+            </p>
+          </div>
+          <div className="flex items-center">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
