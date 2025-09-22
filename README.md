@@ -17,21 +17,6 @@
 - **Link Management**: Add unlimited links with drag & drop reordering  
 - **Theme Customization**: 6 preset themes + custom color options
 - **One-Click Publishing**: Share your page instantly
-- **Performance Focused**: Built with Next.js 15 and React 19
-
-## 🚀 Quick Start
-
-```bash
-# Clone and install
-git clone https://github.com/your-username/one-link.git
-cd one-link
-npm install
-
-# Start development
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to get started.
 
 ## 🛠️ Tech Stack
 
@@ -39,6 +24,7 @@ Open [http://localhost:3000](http://localhost:3000) to get started.
 - **React 19** & **TypeScript**
 - **Tailwind CSS** for styling
 - **Biome** for linting and formatting
+- **Vercel** for deployment
 
 ## 🎯 How It Works
 
@@ -61,4 +47,4 @@ Contributions welcome! Please check our issues or submit a pull request.
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) for details.
+[MIT License](LICENSE).
