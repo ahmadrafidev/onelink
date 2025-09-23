@@ -23,11 +23,11 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header
-        className="px-4 py-3 md:px-6 md:py-6"
+        className="py-3 md:py-6"
         role="banner"
         aria-label="OneLink application header"
       >
-        <div className="max-w-6xl mx-auto flex justify-between items-center px-6">
+        <div className="max-w-6xl mx-auto flex justify-between items-center px-4 md:px-6">
           <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
             <h1
               className="text-lg md:text-2xl font-semibold text-foreground tracking-tight truncate"
