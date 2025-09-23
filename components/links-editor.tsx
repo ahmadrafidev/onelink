@@ -351,8 +351,8 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
 
               {customLinks.length === 0 && (
               <div className="text-center py-8 text-muted-foreground" role="status">
-                <Link className="w-12 h-12 mx-auto mb-4 opacity-50" aria-hidden="true" />
-                <p>No custom links yet. Click "Add Link" to get started.</p>
+                <Link className="md:w-10 md:h-10 w-8 h-8 mx-auto mb-4 opacity-50" aria-hidden="true" />
+                <p>No custom links yet.<br/>Click "Add Link" to get started.</p>
               </div>
             )}
           </div>
