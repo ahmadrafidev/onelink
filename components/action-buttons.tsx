@@ -8,6 +8,19 @@ import { cn } from '@/lib/utils';
 import { MOCK_BASE_URL } from '@/lib/constants';
 import { downloadAppData, uploadAndImportAppData, validateBeforeExport } from '@/lib/utils/export-import';
 import type { ActionButtonsProps, AppState } from '@/lib/types';
+import { 
+  Zap, 
+  AlertTriangle, 
+  CheckCircle, 
+  AlertCircle, 
+  Upload, 
+  Eye, 
+  Share2, 
+  Link, 
+  Loader2, 
+  Download, 
+  FolderOpen 
+} from 'lucide-react';
 
 interface ExtendedActionButtonsProps extends ActionButtonsProps {
   onImportData?: (data: AppState) => void;
@@ -33,7 +46,12 @@ export function ActionButtons({
   const isReadyToPublish = profile.name && totalActiveLinks > 0;
 
   const handlePublish = async () => {
-    if (!isReadyToPublish) return;
+    if (!isReadyToPublish) {
+      alert('Please add your name and at least one link before publishing.');
+      return;
+    }
+
+    if (isPublishing) return;
 
     setIsPublishing(true);
     
@@ -48,7 +66,12 @@ export function ActionButtons({
   };
 
   const handleShorten = async () => {
-    if (!publishedUrl) return;
+    if (!publishedUrl) {
+      alert('Please publish your page first before shortening the URL.');
+      return;
+    }
+
+    if (isShortening) return;
 
     setIsShortening(true);
     
@@ -64,6 +87,13 @@ export function ActionButtons({
   };
 
   const handleExport = async () => {
+    if (!isReadyToPublish) {
+      alert('Please add your name and at least one link before exporting.');
+      return;
+    }
+
+    if (isExporting) return;
+
     setIsExporting(true);
     setExportErrors([]);
     
@@ -126,7 +156,10 @@ export function ActionButtons({
   };
 
   const handleShare = async () => {
-    if (!publishedUrl) return;
+    if (!publishedUrl) {
+      alert('Please publish your page first before sharing.');
+      return;
+    }
 
     if (navigator.share) {
       try {
@@ -148,6 +181,11 @@ export function ActionButtons({
   };
 
   const handlePreview = () => {
+    if (!isReadyToPublish) {
+      alert('Please add your name and at least one link before previewing.');
+      return;
+    }
+
     // Open preview in new tab
     const previewData = encodeURIComponent(JSON.stringify({ 
       profile, 
@@ -166,20 +204,7 @@ export function ActionButtons({
             className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center"
             aria-hidden="true"
           >
-            <svg
-              className="w-4 h-4 text-indigo-600 dark:text-indigo-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
+            <Zap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           </div>
           Actions
         </CardTitle>
@@ -189,14 +214,7 @@ export function ActionButtons({
         {/* Status Message */}
         {!isReadyToPublish && (
           <Alert role="status" aria-live="polite">
-            <svg 
-              className="w-4 h-4" 
-              fill="currentColor" 
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
+            <AlertTriangle className="w-4 h-4" aria-hidden="true" />
             <AlertTitle>Almost ready!</AlertTitle>
             <AlertDescription id="publish-requirements">
               Add your name and at least one link to publish your page.
@@ -207,19 +225,12 @@ export function ActionButtons({
         {/* Export Errors */}
         {exportErrors.length > 0 && (
           <Alert variant="destructive" role="alert" aria-live="assertive">
-            <svg 
-              className="w-4 h-4" 
-              fill="currentColor" 
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
+            <AlertCircle className="w-4 h-4" aria-hidden="true" />
             <AlertTitle>Validation Error</AlertTitle>
             <AlertDescription>
-              <ul className="mt-2 space-y-1">
+              <ul className="mt-2 space-y-1" role="list">
                 {exportErrors.map((error, index) => (
-                  <li key={index} className="text-sm">• {error}</li>
+                  <li key={index} className="text-sm" role="listitem">• {error}</li>
                 ))}
               </ul>
             </AlertDescription>
@@ -229,14 +240,7 @@ export function ActionButtons({
         {/* Published URL */}
         {publishedUrl && (
           <Alert role="status" aria-live="polite">
-            <svg 
-              className="w-4 h-4" 
-              fill="currentColor" 
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
+            <CheckCircle className="w-4 h-4" aria-hidden="true" />
             <AlertTitle>Published successfully!</AlertTitle>
             <AlertDescription>
               Your page is live at:{' '}
@@ -247,7 +251,12 @@ export function ActionButtons({
                   navigator.clipboard.writeText(publishedUrl);
                   alert('URL copied to clipboard!');
                 }}
-                className="h-auto p-1 font-mono text-xs hover:bg-muted"
+                className={cn(
+                  "h-auto p-1 font-mono text-xs hover:bg-muted",
+                  "transition-all duration-200 ease-out transform",
+                  "hover:scale-[1.02] active:scale-[0.98]",
+                  "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+                )}
                 aria-label={`Copy URL ${publishedUrl} to clipboard`}
               >
                 {publishedUrl}
@@ -257,40 +266,32 @@ export function ActionButtons({
         )}
 
         {/* Action Buttons Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div 
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+          role="group"
+          aria-label="Main action buttons for publishing and managing your OneLink page"
+        >
           {/* Publish Button */}
           <Button
             onClick={handlePublish}
-            disabled={!isReadyToPublish || isPublishing}
-            variant="secondary"
-            className="transition-all duration-200 ease-out transform hover:scale-105"
-            aria-label={!isReadyToPublish ? "Publish page (disabled: add name and at least one link first)" : "Publish your OneLink page"}
+            className={cn(
+              "transition-all duration-200 ease-out transform",
+              "hover:scale-[1.02] active:scale-[0.98]",
+              "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+            )}
+            aria-label="Publish your OneLink page"
+            aria-busy={isPublishing}
             aria-describedby={!isReadyToPublish ? "publish-requirements" : undefined}
           >
             {isPublishing ? (
               <>
-                <svg 
-                  className="w-4 h-4 animate-spin" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span aria-live="polite">Publishing...</span>
+                <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                <span className="sr-only" aria-live="polite">Publishing in progress</span>
+                Publishing...
               </>
             ) : (
               <>
-                <svg 
-                  className="w-4 h-4" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
+                <Upload className="w-4 h-4" aria-hidden="true" />
                 Publish
               </>
             )}
@@ -299,76 +300,54 @@ export function ActionButtons({
           {/* Preview Button */}
           <Button
             onClick={handlePreview}
-            disabled={!isReadyToPublish}
-            variant="outline"
-            className="transition-all duration-200 ease-out transform hover:scale-105"
-            aria-label={!isReadyToPublish ? "Preview page (disabled: add name and at least one link first)" : "Preview your OneLink page in a new tab"}
+            className={cn(
+              "transition-all duration-200 ease-out transform",
+              "hover:scale-[1.02] active:scale-[0.98]",
+              "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+            )}
+            aria-label="Preview your OneLink page in a new tab"
+            aria-describedby={!isReadyToPublish ? "publish-requirements" : undefined}
           >
-            <svg 
-              className="w-4 h-4" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
+            <Eye className="w-4 h-4" aria-hidden="true" />
             Preview
           </Button>
 
           {/* Share Button */}
           <Button
             onClick={handleShare}
-            disabled={!publishedUrl}
-            variant="secondary"
-            className="transition-all duration-200 ease-out transform hover:scale-105"
-            aria-label={!publishedUrl ? "Share page (disabled: publish page first)" : "Share your OneLink page"}
+            className={cn(
+              "transition-all duration-200 ease-out transform",
+              "hover:scale-[1.02] active:scale-[0.98]",
+              "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+            )}
+            aria-label={publishedUrl ? "Share your published OneLink page" : "Share page (requires publishing first)"}
+            aria-describedby={!publishedUrl ? "share-requirements" : undefined}
           >
-            <svg 
-              className="w-4 h-4" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-            </svg>
+            <Share2 className="w-4 h-4" aria-hidden="true" />
             Share
           </Button>
 
           {/* Shortener Button */}
           <Button
             onClick={handleShorten}
-            disabled={!publishedUrl || isShortening}
-            variant="secondary"
-            className="transition-all duration-200 ease-out transform hover:scale-105"
-            aria-label={!publishedUrl ? "Shorten URL (disabled: publish page first)" : "Create a shortened URL and copy to clipboard"}
+            className={cn(
+              "transition-all duration-200 ease-out transform",
+              "hover:scale-[1.02] active:scale-[0.98]",
+              "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+            )}
+            aria-label={publishedUrl ? "Create a shortened URL and copy to clipboard" : "Shorten URL (requires publishing first)"}
+            aria-busy={isShortening}
+            aria-describedby={!publishedUrl ? "shorten-requirements" : undefined}
           >
             {isShortening ? (
               <>
-                <svg 
-                  className="w-4 h-4 animate-spin" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span aria-live="polite">Shortening...</span>
+                <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                <span className="sr-only" aria-live="polite">Shortening URL in progress</span>
+                Shortening...
               </>
             ) : (
               <>
-                <svg 
-                  className="w-4 h-4" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
+                <Link className="w-4 h-4" aria-hidden="true" />
                 Shorten
               </>
             )}
@@ -377,39 +356,34 @@ export function ActionButtons({
 
         {/* Secondary Actions */}
         <div className="pt-4 border-t border-border">
-          <div className="flex justify-center gap-4">
+          <div 
+            className="flex justify-center gap-4"
+            role="group"
+            aria-label="Secondary actions for data management"
+          >
             <Button
               onClick={handleExport}
-              disabled={!isReadyToPublish || isExporting}
               variant="ghost"
               size="sm"
-              className="text-muted-foreground hover:text-foreground"
-              aria-label={!isReadyToPublish ? "Export data (disabled: add name and at least one link first)" : "Export your profile and links data as JSON file"}
+              className={cn(
+                "text-muted-foreground hover:text-foreground",
+                "transition-all duration-200 ease-out transform",
+                "hover:scale-[1.02] active:scale-[0.98]",
+                "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+              )}
+              aria-label={isReadyToPublish ? "Export your profile and links data as JSON file" : "Export data (requires name and at least one link)"}
+              aria-busy={isExporting}
+              aria-describedby={!isReadyToPublish ? "export-requirements" : undefined}
             >
               {isExporting ? (
                 <>
-                  <svg 
-                    className="w-4 h-4 animate-spin" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  <span aria-live="polite">Exporting...</span>
+                  <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                  <span className="sr-only" aria-live="polite">Exporting data in progress</span>
+                  Exporting...
                 </>
               ) : (
                 <>
-                  <svg 
-                    className="w-4 h-4" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+                  <Download className="w-4 h-4" aria-hidden="true" />
                   Export Data
                 </>
               )}
@@ -419,51 +393,60 @@ export function ActionButtons({
               <>
                 <Button
                   onClick={handleImport}
-                  disabled={isImporting}
                   variant="ghost"
                   size="sm"
-                  className="text-muted-foreground hover:text-foreground"
+                  className={cn(
+                    "text-muted-foreground hover:text-foreground",
+                    "transition-all duration-200 ease-out transform",
+                    "hover:scale-[1.02] active:scale-[0.98]",
+                    "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+                  )}
                   aria-label="Import profile and links data from JSON file"
+                  aria-busy={isImporting}
+                  aria-controls="file-input"
                 >
                   {isImporting ? (
                     <>
-                      <svg 
-                        className="w-4 h-4 animate-spin" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      <span aria-live="polite">Importing...</span>
+                      <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                      <span className="sr-only" aria-live="polite">Importing data in progress</span>
+                      Importing...
                     </>
                   ) : (
                     <>
-                      <svg 
-                        className="w-4 h-4" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-                      </svg>
+                      <FolderOpen className="w-4 h-4" aria-hidden="true" />
                       Import Data
                     </>
                   )}
                 </Button>
                 
                 <input
+                  id="file-input"
                   ref={fileInputRef}
                   type="file"
                   accept=".json"
                   onChange={handleFileImport}
                   className="hidden"
-                  aria-label="Select JSON file to import"
+                  aria-label="Select JSON file to import profile and links data"
+                  aria-describedby="file-input-description"
                 />
+                <span id="file-input-description" className="sr-only">
+                  Choose a JSON file containing your OneLink profile and links data to import. The file should be exported from OneLink previously.
+                </span>
               </>
             )}
+          </div>
+        </div>
+
+        {/* Hidden requirement messages for screen readers */}
+        <div className="sr-only">
+          <div id="share-requirements">
+            To share your page, you must first publish it by clicking the Publish button.
+          </div>
+          <div id="shorten-requirements">
+            To create a shortened URL, you must first publish your page by clicking the Publish button.
+          </div>
+          <div id="export-requirements">
+            To export your data, please add your name and at least one link first.
           </div>
         </div>
       </CardContent>
