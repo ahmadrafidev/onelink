@@ -161,7 +161,7 @@ export function ActionButtons({
                 }}
                 className={cn(
                   "h-auto p-1 font-mono text-xs hover:bg-muted",
-                  "transition-all duration-200 ease-out transform",
+                  "transition-all duration-150 ease-out transform",
                   "hover:scale-[1.02] active:scale-[0.98]",
                   "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
                 )}
@@ -183,7 +183,7 @@ export function ActionButtons({
           <Button
             onClick={handlePublish}
             className={cn(
-              "transition-all duration-200 ease-out transform",
+              "transition-all duration-150 ease-out transform",
               "hover:scale-[1.02] active:scale-[0.98]",
               "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
             )}
@@ -209,7 +209,7 @@ export function ActionButtons({
           <Button
             onClick={handlePreview}
             className={cn(
-              "transition-all duration-200 ease-out transform",
+              "transition-all duration-150 ease-out transform",
               "hover:scale-[1.02] active:scale-[0.98]",
               "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
             )}
@@ -224,7 +224,7 @@ export function ActionButtons({
           <Button
             onClick={handleShare}
             className={cn(
-              "transition-all duration-200 ease-out transform",
+              "transition-all duration-150 ease-out transform",
               "hover:scale-[1.02] active:scale-[0.98]",
               "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
             )}
@@ -239,7 +239,7 @@ export function ActionButtons({
           <Button
             onClick={handleShorten}
             className={cn(
-              "transition-all duration-200 ease-out transform",
+              "transition-all duration-150 ease-out transform",
               "hover:scale-[1.02] active:scale-[0.98]",
               "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
             )}
