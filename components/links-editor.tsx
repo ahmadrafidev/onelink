@@ -3,15 +3,15 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Trash2 } from 'lucide-react';
-
 import { zodResolver } from '@hookform/resolvers/zod';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { cn } from '@/lib/utils';
 
+import { cn } from '@/lib/utils';
 import { customLinkFormSchema, sanitizeUrl, generateId } from '@/lib/schemas';
 import { validateSocialLinkUrl, validateCustomLinkField } from '@/lib/utils/validation';
 import type { LinksEditorProps, SocialLink, CustomLink, CustomLinkFormData } from '@/lib/types';
@@ -91,7 +91,7 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
         </CardHeader>
 
         <CardContent>
-          <div className="space-y-4" role="group" aria-label="Social media links">
+          <div className="space-y-3" role="group" aria-label="Social media links">
             {socialLinks.map((link) => (
               <div
                 key={link.id}
@@ -125,55 +125,48 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                   </div>
                   
                   {/* URL Input */}
-                  <div className="flex-1 space-y-2 min-w-0">
-                    {/* URL Input */}
-                    <div className="relative">
-                      <Label htmlFor={`social-url-${link.id}`} className="sr-only">
-                        {link.platform} URL
-                      </Label>
-                      <Input
-                        id={`social-url-${link.id}`}
-                        type="url"
-                        value={link.url}
-                        onChange={(e) => updateSocialLink(link.id, 'url', e.target.value)}
-                        placeholder={link.placeholder}
-                        className={cn(
-                          "text-sm transition-colors duration-200",
-                          (() => {
+                  <div className="flex-1 min-w-0">
+                    <div className="bg-white dark:bg-gray-900/50 rounded-lg border border-gray-200/60 dark:border-gray-700/60 overflow-hidden transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600 focus-within:border-zinc-400 dark:focus-within:border-zinc-500 focus-within:shadow-sm">
+                      <div className="relative">
+                        <Label htmlFor={`social-url-${link.id}`} className="sr-only">
+                          {link.platform} URL
+                        </Label>
+                        <Input
+                          id={`social-url-${link.id}`}
+                          type="url"
+                          value={link.url}
+                          onChange={(e) => updateSocialLink(link.id, 'url', e.target.value)}
+                          placeholder={link.placeholder}
+                          className={cn(
+                            "text-sm transition-all duration-300 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-3 h-auto rounded-none",
+                            "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+                            link.url ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400",
+                            (() => {
+                              const validation = getUrlValidation(link.url);
+                              return !validation.isValid && "text-red-600 dark:text-red-400 placeholder:text-red-400";
+                            })()
+                          )}
+                          aria-describedby={(() => {
                             const validation = getUrlValidation(link.url);
-                            return !validation.isValid && "border-destructive focus-visible:ring-destructive";
-                          })()
-                        )}
-                        aria-describedby={(() => {
+                            return !validation.isValid ? `social-url-error-${link.id}` : undefined;
+                          })()}
+                          aria-invalid={(() => {
+                            const validation = getUrlValidation(link.url);
+                            return !validation.isValid;
+                          })()}
+                        />
+                        {(() => {
                           const validation = getUrlValidation(link.url);
-                          return !validation.isValid ? `social-url-error-${link.id}` : undefined;
-                        })()}
-                        aria-invalid={(() => {
-                          const validation = getUrlValidation(link.url);
-                          return !validation.isValid;
-                        })()}
-                      />
-                      {(() => {
-                        const validation = getUrlValidation(link.url);
-                        if (!validation.isValid) {
-                          return (
-                            <>
-                              <div className="absolute right-3 top-2">
-                                <svg className="w-4 h-4 text-destructive" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                              <div id={`social-url-error-${link.id}`} className="text-xs text-destructive mt-1 flex items-center gap-1">
-                                <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
+                          if (!validation.isValid) {
+                            return (
+                              <div id={`social-url-error-${link.id}`} className="text-xs text-red-500 dark:text-red-400 px-3 pb-2 -mt-1">
                                 {validation.error}
                               </div>
-                            </>
-                          );
-                        }
-                        return null;
-                      })()}
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
                     </div>
                   </div>
                   
@@ -230,7 +223,7 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
         </CardHeader>
 
         <CardContent>
-          <div className="space-y-4" role="group" aria-label="Custom links list">
+          <div className="space-y-3" role="group" aria-label="Custom links list">
             {customLinks.map((link) => (
               <div
                 key={link.id}
@@ -265,98 +258,100 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                   </div>
                   
                   {/* Title & URL Input */}
-                  <div className="flex-1 space-y-2 min-w-0">
-                    {/* Title Input */}
-                    <div className="relative">
-                      <Label htmlFor={`custom-title-${link.id}`} className="sr-only">
-                        Link title
-                      </Label>
-                      <Input
-                        id={`custom-title-${link.id}`}
-                        type="text"
-                        value={link.title}
-                        onChange={(e) => updateCustomLink(link.id, 'title', e.target.value)}
-                        placeholder="Link title"
-                        className={cn(
-                          "text-sm font-medium transition-colors duration-200",
-                          (() => {
+                  <div className="flex-1 min-w-0">
+                    <div className="bg-white dark:bg-gray-900/50 rounded-lg border border-gray-200/60 dark:border-gray-700/60 overflow-hidden transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600 focus-within:border-slate-400 dark:focus-within:border-slate-500 focus-within:shadow-sm">
+                      {/* Title Input */}
+                      <div className="relative">
+                        <Label htmlFor={`custom-title-${link.id}`} className="sr-only">
+                          Link title
+                        </Label>
+                        <Input
+                          id={`custom-title-${link.id}`}
+                          type="text"
+                          value={link.title}
+                          onChange={(e) => updateCustomLink(link.id, 'title', e.target.value)}
+                          placeholder="Link title"
+                          className={cn(
+                            "text-sm font-medium transition-all duration-300 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-3 h-auto rounded-none",
+                            "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+                            link.title ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400",
+                            (() => {
+                              const validation = getCustomLinkFieldValidation('title', link.title);
+                              return !validation.isValid && "text-red-600 dark:text-red-400 placeholder:text-red-400";
+                            })()
+                          )}
+                          aria-describedby={(() => {
                             const validation = getCustomLinkFieldValidation('title', link.title);
-                            return !validation.isValid && "border-destructive focus-visible:ring-destructive";
-                          })()
-                        )}
-                        aria-describedby={(() => {
+                            return !validation.isValid ? `custom-title-error-${link.id}` : undefined;
+                          })()}
+                          aria-invalid={(() => {
+                            const validation = getCustomLinkFieldValidation('title', link.title);
+                            return !validation.isValid;
+                          })()}
+                        />
+                        {(() => {
                           const validation = getCustomLinkFieldValidation('title', link.title);
-                          return !validation.isValid ? `custom-title-error-${link.id}` : undefined;
-                        })()}
-                        aria-invalid={(() => {
-                          const validation = getCustomLinkFieldValidation('title', link.title);
-                          return !validation.isValid;
-                        })()}
-                      />
-                      {(() => {
-                        const validation = getCustomLinkFieldValidation('title', link.title);
-                        if (!validation.isValid) {
-                          return (
-                            <div id={`custom-title-error-${link.id}`} className="text-xs text-destructive mt-1 flex items-center gap-1">
-                              <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
-                              {validation.error}
-                            </div>
-                          );
-                        }
-                        return null;
-                      })()}
-                    </div>
-
-                    {/* URL Input */}
-                    <div className="relative">
-                      <Label htmlFor={`custom-url-${link.id}`} className="sr-only">
-                        Link URL
-                      </Label>
-                      <Input
-                        id={`custom-url-${link.id}`}
-                        type="url"
-                        value={link.url}
-                        onChange={(e) => updateCustomLink(link.id, 'url', e.target.value)}
-                        placeholder="https://example.com"
-                        className={cn(
-                          "text-sm transition-colors duration-200",
-                          (() => {
-                            const validation = getCustomLinkFieldValidation('url', link.url);
-                            return !validation.isValid && "border-destructive focus-visible:ring-destructive";
-                          })()
-                        )}
-                        aria-describedby={(() => {
-                          const validation = getCustomLinkFieldValidation('url', link.url);
-                          return !validation.isValid ? `custom-url-error-${link.id}` : undefined;
-                        })()}
-                        aria-invalid={(() => {
-                          const validation = getCustomLinkFieldValidation('url', link.url);
-                          return !validation.isValid;
-                        })()}
-                      />
-                      {(() => {
-                        const validation = getCustomLinkFieldValidation('url', link.url);
-                        if (!validation.isValid) {
-                          return (
-                            <>
-                              <div className="absolute right-3 top-2">
-                                <svg className="w-4 h-4 text-destructive" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
-                              </div>
-                              <div id={`custom-url-error-${link.id}`} className="text-xs text-destructive mt-1 flex items-center gap-1">
-                                <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                </svg>
+                          if (!validation.isValid) {
+                            return (
+                              <div id={`custom-title-error-${link.id}`} className="text-xs text-red-600 dark:text-red-400 px-3 py-1.5 bg-red-50/80 dark:bg-red-950/30 border-t border-red-200/60 dark:border-red-800/40 font-medium">
                                 {validation.error}
                               </div>
-                            </>
-                          );
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
+
+                      {/* Subtle Divider */}
+                      {(() => {
+                        const validation = getCustomLinkFieldValidation('title', link.title);
+                        if (validation.isValid) {
+                          return <div className="h-px bg-gray-100 dark:bg-gray-800"></div>;
                         }
                         return null;
                       })()}
+
+                      {/* URL Input */}
+                      <div className="relative">
+                        <Label htmlFor={`custom-url-${link.id}`} className="sr-only">
+                          Link URL
+                        </Label>
+                        <Input
+                          id={`custom-url-${link.id}`}
+                          type="url"
+                          value={link.url}
+                          onChange={(e) => updateCustomLink(link.id, 'url', e.target.value)}
+                          placeholder="https://example.com"
+                          className={cn(
+                            "text-sm transition-all duration-300 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 px-3 py-3 h-auto rounded-none",
+                            "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+                            link.url ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400",
+                            (() => {
+                              const validation = getCustomLinkFieldValidation('url', link.url);
+                              return !validation.isValid && "text-red-600 dark:text-red-400 placeholder:text-red-400";
+                            })()
+                          )}
+                          aria-describedby={(() => {
+                            const validation = getCustomLinkFieldValidation('url', link.url);
+                            return !validation.isValid ? `custom-url-error-${link.id}` : undefined;
+                          })()}
+                          aria-invalid={(() => {
+                            const validation = getCustomLinkFieldValidation('url', link.url);
+                            return !validation.isValid;
+                          })()}
+                        />
+                        {(() => {
+                          const validation = getCustomLinkFieldValidation('url', link.url);
+                          if (!validation.isValid) {
+                            return (
+                              <div id={`custom-url-error-${link.id}`} className="text-xs text-red-600 dark:text-red-400 px-3 py-1.5 bg-red-50/80 dark:bg-red-950/30 border-t border-red-200/60 dark:border-red-800/40 font-medium">
+                                {validation.error}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
                     </div>
                   </div>
                   
@@ -383,9 +378,16 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
             ))}
 
               {customLinks.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground" role="status">
-                <Link className="md:w-10 md:h-10 w-8 h-8 mx-auto mb-4 opacity-50" aria-hidden="true" />
-                <p>No custom links yet.<br/>Click "Add Link" to get started.</p>
+              <div className="text-center py-16" role="status">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-center shadow-sm">
+                  <Link className="w-6 h-6 text-slate-500 dark:text-slate-400" aria-hidden="true" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Create your first custom link</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed">
+                    Add any website, portfolio, or social media link to your profile
+                  </p>
+                </div>
               </div>
             )}
           </div>
