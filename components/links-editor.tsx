@@ -57,6 +57,10 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
     return { isValid: true, error: null };
   };
 
+  const isSocialLinkFilled = (url: string) => url && url.trim() !== '';
+  const isCustomLinkFilled = (title: string, url: string) => 
+    (title && title.trim() !== '') || (url && url.trim() !== '');
+
   return (
     <div className="space-y-6">
       {/* Social Media Links */}
@@ -92,7 +96,11 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
               <div
                 key={link.id}
                 className={cn(
-                  "p-4 border rounded-lg transition-all duration-200 ease-out focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+                  "p-4 rounded-xl transition-all duration-300 ease-out focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+                  "border",
+                  isSocialLinkFilled(link.url) 
+                    ? "border-zinc-300 bg-zinc-50/50 dark:border-zinc-600 dark:bg-zinc-800/30 shadow-sm" 
+                    : "border-gray-200/60 bg-transparent dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600",
                   !link.isActive && "opacity-60"
                 )}
                 role="group"
@@ -101,8 +109,18 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                 <div className="flex items-center gap-4">
                   {/* Platform Icon */}
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                      <link.icon className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
+                      isSocialLinkFilled(link.url)
+                        ? "bg-zinc-100 dark:bg-zinc-700 shadow-sm"
+                        : "bg-gray-50 dark:bg-gray-800 border border-gray-200/50 dark:border-gray-700/50"
+                    )}>
+                      <link.icon className={cn(
+                        "w-5 h-5 transition-colors duration-300",
+                        isSocialLinkFilled(link.url)
+                          ? "text-zinc-700 dark:text-zinc-300"
+                          : "text-gray-500 dark:text-gray-400"
+                      )} aria-hidden="true" />
                     </div>
                   </div>
                   
@@ -159,7 +177,7 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                     </div>
                   </div>
                   
-                  {/* Active Toggle - Just checkbox */}
+                  {/* Active Toggle */}
                   <div className="flex-shrink-0">
                     <Checkbox
                       id={`social-active-${link.id}`}
@@ -217,7 +235,12 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
               <div
                 key={link.id}
                 className={cn(
-                  "p-4 border rounded-lg transition-all duration-200 ease-out focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+                  "p-4 rounded-xl transition-all duration-300 ease-out focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+                  "border",
+                  isCustomLinkFilled(link.title, link.url)
+                    ? "border-slate-300 bg-slate-50/50 dark:border-slate-600 dark:bg-slate-800/30 shadow-sm"
+                    : "border-gray-200/60 bg-transparent dark:border-gray-700/60 hover:border-gray-300 dark:hover:border-gray-600",
+                  // Active state
                   !link.isActive && "opacity-60"
                 )}
                 role="group"
@@ -226,8 +249,18 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                 <div className="flex items-center gap-4">
                   {/* Link Icon */}
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                      <Link className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
+                      isCustomLinkFilled(link.title, link.url)
+                        ? "bg-slate-100 dark:bg-slate-700 shadow-sm"
+                        : "bg-gray-50 dark:bg-gray-800 border border-gray-200/50 dark:border-gray-700/50"
+                    )}>
+                      <Link className={cn(
+                        "w-5 h-5 transition-colors duration-300",
+                        isCustomLinkFilled(link.title, link.url)
+                          ? "text-slate-700 dark:text-slate-300"
+                          : "text-gray-500 dark:text-gray-400"
+                      )} aria-hidden="true" />
                     </div>
                   </div>
                   
