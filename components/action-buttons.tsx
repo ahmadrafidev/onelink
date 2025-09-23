@@ -21,6 +21,7 @@ import {
   Download, 
   FolderOpen 
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ExtendedActionButtonsProps extends ActionButtonsProps {
   onImportData?: (data: AppState) => void;
@@ -47,7 +48,7 @@ export function ActionButtons({
 
   const handlePublish = async () => {
     if (!isReadyToPublish) {
-      alert('Please add your name and at least one link before publishing.');
+      toast.error('Please add your name and at least one link before publishing.');
       return;
     }
 
@@ -63,11 +64,14 @@ export function ActionButtons({
     const mockUrl = `${MOCK_BASE_URL}/${username}`;
     setPublishedUrl(mockUrl);
     setIsPublishing(false);
+    
+    // Show success notification
+    toast.success('Your page has been published successfully!');
   };
 
   const handleShorten = async () => {
     if (!publishedUrl) {
-      alert('Please publish your page first before shortening the URL.');
+      toast.error('Please publish your page first before shortening the URL.');
       return;
     }
 
@@ -83,12 +87,12 @@ export function ActionButtons({
     setIsShortening(false);
     
     // Show success message
-    alert(`Short URL copied to clipboard: ${shortUrl}`);
+    toast.success(`Short URL copied to clipboard: ${shortUrl}`);
   };
 
   const handleExport = async () => {
     if (!isReadyToPublish) {
-      alert('Please add your name and at least one link before exporting.');
+      toast.error('Please add your name and at least one link before exporting.');
       return;
     }
 
@@ -117,6 +121,8 @@ export function ActionButtons({
       const result = downloadAppData(appState);
       if (!result.success) {
         setExportErrors([result.message]);
+      } else {
+        toast.success('Data exported successfully!');
       }
     } catch (error) {
       setExportErrors([error instanceof Error ? error.message : 'Export failed']);
@@ -140,7 +146,7 @@ export function ActionButtons({
       const result = await uploadAndImportAppData(file);
       if (result.success && onImportData) {
         onImportData(result.data);
-        alert('Data imported successfully!');
+        toast.success('Data imported successfully!');
       } else if (!result.success) {
         setExportErrors([result.error]);
       }
@@ -157,7 +163,7 @@ export function ActionButtons({
 
   const handleShare = async () => {
     if (!publishedUrl) {
-      alert('Please publish your page first before sharing.');
+      toast.error('Please publish your page first before sharing.');
       return;
     }
 
@@ -171,18 +177,18 @@ export function ActionButtons({
       } catch (error) {
         // Fallback to clipboard
         navigator.clipboard.writeText(publishedUrl);
-        alert('Link copied to clipboard!');
+        toast.info('Link copied to clipboard!');
       }
     } else {
       // Fallback to clipboard
       navigator.clipboard.writeText(publishedUrl);
-      alert('Link copied to clipboard!');
+      toast.info('Link copied to clipboard!');
     }
   };
 
   const handlePreview = () => {
     if (!isReadyToPublish) {
-      alert('Please add your name and at least one link before previewing.');
+      toast.error('Please add your name and at least one link before previewing.');
       return;
     }
 
@@ -249,7 +255,7 @@ export function ActionButtons({
                 size="sm"
                 onClick={() => {
                   navigator.clipboard.writeText(publishedUrl);
-                  alert('URL copied to clipboard!');
+                  toast.info('URL copied to clipboard!');
                 }}
                 className={cn(
                   "h-auto p-1 font-mono text-xs hover:bg-muted",
