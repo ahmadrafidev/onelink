@@ -378,13 +378,13 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
             ))}
 
               {customLinks.length === 0 && (
-              <div className="text-center py-16" role="status">
+              <div className="text-center py-10 md:py-16" role="status">
                 <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-center shadow-sm">
                   <Link className="w-6 h-6 text-slate-500 dark:text-slate-400" aria-hidden="true" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Create your first custom link</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed">
+                  <h3 className="text-sm md:text-lg font-medium text-gray-900 dark:text-gray-100">Create your first custom link</h3>
+                  <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed">
                     Add any website, portfolio, or social media link to your profile
                   </p>
                 </div>
