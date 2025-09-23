@@ -57,7 +57,7 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
     return { isValid: true, error: null };
   };
 
-  const isSocialLinkFilled = (url: string) => url && url.trim() !== '';
+  const isSocialLinkFilled = (url: string | undefined) => url && url.trim() !== '';
   const isCustomLinkFilled = (title: string, url: string) => 
     (title && title.trim() !== '') || (url && url.trim() !== '');
 
