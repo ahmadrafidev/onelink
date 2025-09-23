@@ -119,14 +119,6 @@ export const socialLinkFormSchema = z.object({
   url: optionalUrlSchema,
 });
 
-/**
- * Export/Import schema for data persistence
- */
-export const exportDataSchema = z.object({
-  version: z.string().default('1.0'),
-  exportDate: z.string().datetime(),
-  data: appStateSchema,
-});
 
 /**
  * Type inference from schemas
@@ -136,7 +128,6 @@ export type SocialLink = z.infer<typeof socialLinkSchema>;
 export type CustomLink = z.infer<typeof customLinkSchema>;
 export type SocialPlatformConfig = z.infer<typeof socialPlatformConfigSchema>;
 export type AppState = z.infer<typeof appStateSchema>;
-export type ExportData = z.infer<typeof exportDataSchema>;
 
 // Form types
 export type ProfileFormData = z.infer<typeof profileFormSchema>;
@@ -150,7 +141,6 @@ export const validateProfile = (data: unknown) => profileSchema.safeParse(data);
 export const validateSocialLink = (data: unknown) => socialLinkSchema.safeParse(data);
 export const validateCustomLink = (data: unknown) => customLinkSchema.safeParse(data);
 export const validateAppState = (data: unknown) => appStateSchema.safeParse(data);
-export const validateExportData = (data: unknown) => exportDataSchema.safeParse(data);
 
 /**
  * Data sanitization helpers

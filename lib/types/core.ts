@@ -11,7 +11,6 @@ export type {
   ProfileFormData,
   CustomLinkFormData,
   SocialLinkFormData,
-  ExportData,
 } from '@/lib/schemas';
 
 export {
@@ -19,7 +18,6 @@ export {
   validateSocialLink,
   validateCustomLink,
   validateAppState,
-  validateExportData,
   sanitizeUrl,
   generateId,
 } from '@/lib/schemas';

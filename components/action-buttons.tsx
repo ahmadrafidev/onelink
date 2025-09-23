@@ -6,40 +6,28 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
 import { MOCK_BASE_URL } from '@/lib/constants';
-import { downloadAppData, uploadAndImportAppData, validateBeforeExport } from '@/lib/utils/export-import';
-import type { ActionButtonsProps, AppState } from '@/lib/types';
-import { 
-  Zap, 
-  AlertTriangle, 
-  CheckCircle, 
-  AlertCircle, 
-  Upload, 
-  Eye, 
-  Share2, 
-  Link, 
-  Loader2, 
-  Download, 
-  FolderOpen 
+import type { ActionButtonsProps } from '@/lib/types';
+import {
+  Zap,
+  AlertTriangle,
+  CheckCircle,
+  AlertCircle,
+  Upload,
+  Eye,
+  Share2,
+  Link,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface ExtendedActionButtonsProps extends ActionButtonsProps {
-  onImportData?: (data: AppState) => void;
-}
-
-export function ActionButtons({ 
-  profile, 
-  socialLinks, 
-  customLinks, 
-  onImportData 
-}: ExtendedActionButtonsProps) {
+export function ActionButtons({
+  profile,
+  socialLinks,
+  customLinks
+}: ActionButtonsProps) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [isShortening, setIsShortening] = useState(false);
-  const [isExporting, setIsExporting] = useState(false);
-  const [isImporting, setIsImporting] = useState(false);
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
-  const [exportErrors, setExportErrors] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const activeSocialLinks = socialLinks.filter(link => link.isActive && link.url);
   const activeCustomLinks = customLinks.filter(link => link.isActive && link.url && link.title);
@@ -88,77 +76,6 @@ export function ActionButtons({
     
     // Show success message
     toast.success(`Short URL copied to clipboard: ${shortUrl}`);
-  };
-
-  const handleExport = async () => {
-    if (!isReadyToPublish) {
-      toast.error('Please add your name and at least one link before exporting.');
-      return;
-    }
-
-    if (isExporting) return;
-
-    setIsExporting(true);
-    setExportErrors([]);
-    
-    try {
-      // Create app state object
-      const appState: AppState = {
-        profile,
-        socialLinks,
-        customLinks,
-      };
-      
-      // Validate before export
-      const validation = validateBeforeExport(appState);
-      if (!validation.isValid) {
-        setExportErrors(validation.errors);
-        setIsExporting(false);
-        return;
-      }
-      
-      // Export with validation
-      const result = downloadAppData(appState);
-      if (!result.success) {
-        setExportErrors([result.message]);
-      } else {
-        toast.success('Data exported successfully!');
-      }
-    } catch (error) {
-      setExportErrors([error instanceof Error ? error.message : 'Export failed']);
-    }
-    
-    setIsExporting(false);
-  };
-
-  const handleImport = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setIsImporting(true);
-    setExportErrors([]);
-    
-    try {
-      const result = await uploadAndImportAppData(file);
-      if (result.success && onImportData) {
-        onImportData(result.data);
-        toast.success('Data imported successfully!');
-      } else if (!result.success) {
-        setExportErrors([result.error]);
-      }
-    } catch (error) {
-      setExportErrors([error instanceof Error ? error.message : 'Import failed']);
-    }
-    
-    setIsImporting(false);
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   };
 
   const handleShare = async () => {
@@ -224,21 +141,6 @@ export function ActionButtons({
             <AlertTitle>Almost ready!</AlertTitle>
             <AlertDescription id="publish-requirements">
               Add your name and at least one link to publish your page.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {/* Export Errors */}
-        {exportErrors.length > 0 && (
-          <Alert variant="destructive" role="alert" aria-live="assertive">
-            <AlertCircle className="w-4 h-4" aria-hidden="true" />
-            <AlertTitle>Validation Error</AlertTitle>
-            <AlertDescription>
-              <ul className="mt-2 space-y-1" role="list">
-                {exportErrors.map((error, index) => (
-                  <li key={index} className="text-sm" role="listitem">• {error}</li>
-                ))}
-              </ul>
             </AlertDescription>
           </Alert>
         )}
@@ -360,88 +262,6 @@ export function ActionButtons({
           </Button>
         </div>
 
-        {/* Secondary Actions */}
-        <div className="pt-4 border-t border-border">
-          <div 
-            className="flex justify-center gap-4"
-            role="group"
-            aria-label="Secondary actions for data management"
-          >
-            <Button
-              onClick={handleExport}
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "text-muted-foreground hover:text-foreground",
-                "transition-all duration-200 ease-out transform",
-                "hover:scale-[1.02] active:scale-[0.98]",
-                "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
-              )}
-              aria-label={isReadyToPublish ? "Export your profile and links data as JSON file" : "Export data (requires name and at least one link)"}
-              aria-busy={isExporting}
-              aria-describedby={!isReadyToPublish ? "export-requirements" : undefined}
-            >
-              {isExporting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-                  <span className="sr-only" aria-live="polite">Exporting data in progress</span>
-                  Exporting...
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4" aria-hidden="true" />
-                  Export Data
-                </>
-              )}
-            </Button>
-            
-            {onImportData && (
-              <>
-                <Button
-                  onClick={handleImport}
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "text-muted-foreground hover:text-foreground",
-                    "transition-all duration-200 ease-out transform",
-                    "hover:scale-[1.02] active:scale-[0.98]",
-                    "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
-                  )}
-                  aria-label="Import profile and links data from JSON file"
-                  aria-busy={isImporting}
-                  aria-controls="file-input"
-                >
-                  {isImporting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-                      <span className="sr-only" aria-live="polite">Importing data in progress</span>
-                      Importing...
-                    </>
-                  ) : (
-                    <>
-                      <FolderOpen className="w-4 h-4" aria-hidden="true" />
-                      Import Data
-                    </>
-                  )}
-                </Button>
-                
-                <input
-                  id="file-input"
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".json"
-                  onChange={handleFileImport}
-                  className="hidden"
-                  aria-label="Select JSON file to import profile and links data"
-                  aria-describedby="file-input-description"
-                />
-                <span id="file-input-description" className="sr-only">
-                  Choose a JSON file containing your OneLink profile and links data to import. The file should be exported from OneLink previously.
-                </span>
-              </>
-            )}
-          </div>
-        </div>
 
         {/* Hidden requirement messages for screen readers */}
         <div className="sr-only">
@@ -450,9 +270,6 @@ export function ActionButtons({
           </div>
           <div id="shorten-requirements">
             To create a shortened URL, you must first publish your page by clicking the Publish button.
-          </div>
-          <div id="export-requirements">
-            To export your data, please add your name and at least one link first.
           </div>
         </div>
       </CardContent>

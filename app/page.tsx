@@ -19,13 +19,6 @@ export default function Home() {
   const [customLinks, setCustomLinks] = useState<CustomLink[]>([]);
   const isMobile = useIsMobile();
 
-  // Handle data import
-  const handleImportData = (data: { profile: Profile; socialLinks: SocialLink[]; customLinks: CustomLink[] }) => {
-    setProfile(data.profile);
-    setSocialLinks(data.socialLinks);
-    setCustomLinks(data.customLinks);
-  };
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -70,7 +63,7 @@ export default function Home() {
         role="main"
         aria-label="OneLink editor interface"
       >
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
           {/* Left Column: Editors */}
           <section 
             className="space-y-6"
@@ -113,17 +106,16 @@ export default function Home() {
 
         {/* Action Buttons */}
         <section 
-          className="mt-8"
+          className="mt-4 md:mt-6"
           aria-labelledby="actions-section-title"
         >
           <h2 id="actions-section-title" className="sr-only">
             Page Actions
           </h2>
-          <ActionButtons 
-            profile={profile} 
+          <ActionButtons
+            profile={profile}
             socialLinks={socialLinks}
             customLinks={customLinks}
-            onImportData={handleImportData}
           />
         </section>
       </main>
