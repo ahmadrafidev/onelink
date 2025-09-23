@@ -385,7 +385,7 @@ export function LinksEditor({ socialLinks, setSocialLinks, customLinks, setCusto
                 <div className="space-y-2">
                   <h3 className="text-sm md:text-lg font-medium text-gray-900 dark:text-gray-100">Create your first custom link</h3>
                   <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed">
-                    Add any website, portfolio, or social media link to your profile
+                    Add any more website, portfolio, or social media links to your profile
                   </p>
                 </div>
               </div>
