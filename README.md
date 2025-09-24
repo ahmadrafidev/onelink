@@ -14,7 +14,7 @@
 - Real-time preview
 - Publish and share your page
 
-## How to User
+## How to Use
 
 1. Add your profile information
 2. Add your social media links
