@@ -369,7 +369,7 @@ export function ActionButtons({
                 </div>
 
                 {/* Native Share */}
-                {typeof navigator !== 'undefined' && navigator.share && (
+                {typeof navigator !== 'undefined' && typeof navigator.share === 'function' && (
                   <Button
                     variant="outline"
                     size="sm"
