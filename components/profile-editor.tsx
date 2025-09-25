@@ -2,10 +2,12 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+
 import { profileFormSchema } from '@/lib/schemas';
 import type { ProfileEditorProps, Profile, ProfileFormData } from '@/lib/types';
 import { cn } from '@/lib/utils';

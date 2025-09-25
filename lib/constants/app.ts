@@ -17,12 +17,6 @@ export const DEFAULT_PROFILE: Profile = {
 };
 
 /**
- * File export configurations
- */
-export const EXPORT_FILE_TYPE = 'application/json';
-export const EXPORT_FILE_PREFIX = 'onelink';
-
-/**
  * Mock URL configuration for development
  */
-export const MOCK_BASE_URL = 'https://onelinkpage.vercel.app/';
+export const MOCK_BASE_URL = 'https://onelinkpage.vercel.app';

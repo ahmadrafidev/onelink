@@ -1,9 +1,13 @@
 'use client';
 
 import { useState, useRef } from 'react';
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 import { cn } from '@/lib/utils';
 import { MOCK_BASE_URL } from '@/lib/constants';
 import type { ActionButtonsProps } from '@/lib/types';
@@ -16,7 +20,12 @@ import {
   Eye,
   Share2,
   Link,
-  Loader2
+  Loader2,
+  Copy,
+  Twitter,
+  Facebook,
+  Linkedin,
+  MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -28,6 +37,7 @@ export function ActionButtons({
   const [isPublishing, setIsPublishing] = useState(false);
   const [isShortening, setIsShortening] = useState(false);
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const activeSocialLinks = socialLinks.filter(link => link.isActive && link.url);
   const activeCustomLinks = customLinks.filter(link => link.isActive && link.url && link.title);
@@ -78,11 +88,19 @@ export function ActionButtons({
     toast.success(`Short URL copied to clipboard: ${shortUrl}`);
   };
 
-  const handleShare = async () => {
-    if (!publishedUrl) {
-      toast.error('Please publish your page first before sharing.');
-      return;
+  const handleCopyLink = async () => {
+    if (!publishedUrl) return;
+
+    try {
+      await navigator.clipboard.writeText(publishedUrl);
+      toast.success('Link copied to clipboard!');
+    } catch (error) {
+      toast.error('Failed to copy link to clipboard');
     }
+  };
+
+  const handleNativeShare = async () => {
+    if (!publishedUrl) return;
 
     if (navigator.share) {
       try {
@@ -91,15 +109,42 @@ export function ActionButtons({
           text: profile.bio || `Check out ${profile.name}'s links`,
           url: publishedUrl,
         });
+        setIsShareOpen(false);
       } catch (error) {
-        // Fallback to clipboard
-        navigator.clipboard.writeText(publishedUrl);
-        toast.info('Link copied to clipboard!');
+        toast.error('Failed to share');
       }
     } else {
-      // Fallback to clipboard
-      navigator.clipboard.writeText(publishedUrl);
-      toast.info('Link copied to clipboard!');
+      toast.info('Native sharing not supported on this device');
+    }
+  };
+
+  const handleSocialShare = (platform: string) => {
+    if (!publishedUrl) return;
+
+    const text = encodeURIComponent(profile.bio || `Check out ${profile.name}'s links`);
+    const url = encodeURIComponent(publishedUrl);
+    const title = encodeURIComponent(`${profile.name}'s Links`);
+
+    let shareUrl = '';
+
+    switch (platform) {
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        break;
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+        break;
+      case 'whatsapp':
+        shareUrl = `https://wa.me/?text=${text}%20${url}`;
+        break;
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'noopener,noreferrer');
+      setIsShareOpen(false);
     }
   };
 
@@ -109,7 +154,6 @@ export function ActionButtons({
       return;
     }
 
-    // Open preview in new tab
     const previewData = encodeURIComponent(JSON.stringify({ 
       profile, 
       socialLinks: activeSocialLinks, 
@@ -221,23 +265,129 @@ export function ActionButtons({
           </Button>
 
           {/* Share Button */}
-          <Button
-            onClick={handleShare}
-            className={cn(
-              "transition-all duration-150 ease-out transform",
-              "hover:scale-[1.02] active:scale-[0.98]",
-              "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
-            )}
-            aria-label={publishedUrl ? "Share your published OneLink page" : "Share page (requires publishing first)"}
-            aria-describedby={!publishedUrl ? "share-requirements" : undefined}
-          >
-            <Share2 className="w-4 h-4" aria-hidden="true" />
-            Share
-          </Button>
+          <Popover open={isShareOpen} onOpenChange={setIsShareOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                onClick={(e) => {
+                  if (!publishedUrl) {
+                    e.preventDefault();
+                    toast.error('Please publish your page first before sharing.');
+                    return;
+                  }
+                }}
+                className={cn(
+                  "transition-all duration-150 ease-out transform",
+                  "hover:scale-[1.02] active:scale-[0.98]",
+                  "motion-reduce:transform-none motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+                )}
+                aria-label={publishedUrl ? "Share your published OneLink page" : "Share page (requires publishing first)"}
+                aria-describedby={!publishedUrl ? "share-requirements" : undefined}
+                disabled={!publishedUrl}
+              >
+                <Share2 className="w-4 h-4" aria-hidden="true" />
+                Share
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-80"
+              align="start"
+              side="top"
+              sideOffset={8}
+            >
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium leading-none">Share your page</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Share your OneLink page with others
+                  </p>
+                </div>
+
+                {/* URL Input and Copy */}
+                <div className="space-y-2">
+                  <label htmlFor="share-url" className="text-sm font-medium">
+                    Your link
+                  </label>
+                  <div className="flex space-x-2">
+                    <Input
+                      id="share-url"
+                      value={publishedUrl || ''}
+                      readOnly
+                      className="flex-1 text-sm"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={handleCopyLink}
+                      className="shrink-0"
+                      aria-label="Copy link to clipboard"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Social Sharing Buttons */}
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Share on social media</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSocialShare('twitter')}
+                      className="justify-start"
+                    >
+                      <Twitter className="w-4 h-4 mr-2" />
+                      Twitter
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSocialShare('facebook')}
+                      className="justify-start"
+                    >
+                      <Facebook className="w-4 h-4 mr-2" />
+                      Facebook
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSocialShare('linkedin')}
+                      className="justify-start"
+                    >
+                      <Linkedin className="w-4 h-4 mr-2" />
+                      LinkedIn
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSocialShare('whatsapp')}
+                      className="justify-start"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      WhatsApp
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Native Share */}
+                {typeof navigator !== 'undefined' && navigator.share && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNativeShare}
+                    className="w-full justify-start"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    More sharing options
+                  </Button>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
 
           {/* Shortener Button */}
           <Button
             onClick={handleShorten}
+            disabled={!publishedUrl}
             className={cn(
               "transition-all duration-150 ease-out transform",
               "hover:scale-[1.02] active:scale-[0.98]",
