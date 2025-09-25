@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OneLink",
+  title: "OneLink - All your links, in one place.",
   description: "All your links, unified in one place.",
 };
 
