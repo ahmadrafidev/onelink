@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { GripVertical, ExternalLink } from 'lucide-react';
+import { GripVertical, ExternalLink, Smartphone, Wifi, Battery, Link } from 'lucide-react';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -65,24 +65,11 @@ export function MobilePreview({ profile, socialLinks, customLinks }: MobilePrevi
     <Card className="transition-all duration-200 ease-out hover:shadow-md sticky top-8">
       <CardHeader>
         <CardTitle className="flex items-center gap-3">
-          <div 
+          <div
             className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900 flex items-center justify-center"
             aria-hidden="true"
           >
-            <svg
-              className="w-4 h-4 text-orange-600 dark:text-orange-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-              />
-            </svg>
+            <Smartphone className="w-4 h-4 text-orange-600 dark:text-orange-400" />
           </div>
           Mobile Preview
         </CardTitle>
@@ -113,12 +100,8 @@ export function MobilePreview({ profile, socialLinks, customLinks }: MobilePrevi
                   9:41
                 </div>
                 <div className="flex items-center gap-1 text-gray-900 dark:text-white">
-                  <svg className="w-3 h-3 opacity-60" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M2 17h20v2H2zm1.15-4.05L4 11.47l.85 1.48L6 12.21l1.15.74L8 11.47l.85 1.48L10 12.21l1.15.74L12 11.47l.85 1.48L14 12.21l1.15.74L16 11.47l.85 1.48L18 12.21l1.15.74L20 11.47l.85 1.48L22 12.21l-1.15-.74L20 10.53l-.85 1.48L18 11.27l-1.15-.74L16 11.47l-.85-1.48L14 10.73l-1.15.74L12 10.53l-.85 1.48L10 11.27l-1.15-.74L8 11.47l-.85-1.48L6 10.73l-1.15.74L4 10.53l-.85 1.48L2 11.27l1.15.74z"/>
-                  </svg>
-                  <svg className="w-3 h-3 opacity-60" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
-                  </svg>
+                  <Wifi className="w-3 h-3 opacity-60" />
+                  <Battery className="w-3 h-3 opacity-60" />
                 </div>
               </div>
 
@@ -236,20 +219,7 @@ export function MobilePreview({ profile, socialLinks, customLinks }: MobilePrevi
                       {/* Empty State */}
                       {activeSocialLinks.length === 0 && draggableCustomLinks.length === 0 && (
                         <div className="text-center py-12" role="status">
-                          <svg
-                            className="w-12 h-12 mx-auto mb-4 opacity-40 text-gray-500 dark:text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                            />
-                          </svg>
+                          <Link className="w-12 h-12 mx-auto mb-4 opacity-40 text-gray-500 dark:text-gray-400" />
                           <p className="text-sm opacity-60 text-gray-500 dark:text-gray-400 max-w-xs">
                             Add some links to see them here
                           </p>
